@@ -1,6 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
+const pool = require('./config/db');
 const productoRoutes = require('./routes/producto.routes');
 
 const app = express();
@@ -33,6 +36,13 @@ app.use((err, req, res, next) => {
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
+// Crea la tabla si no existe (el plan gratuito de Render no tiene Shell para db:init)
+const schema = fs.readFileSync(path.join(__dirname, 'db', 'schema.sql'), 'utf8');
+
+pool.query(schema)
+    .catch((err) => console.error('No se pudo inicializar la tabla', err.message))
+    .finally(() => {
+        app.listen(port, () => {
+            console.log(`Server is running on http://localhost:${port}`);
+        });
+    });
