@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: backendupbtest
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DB_SSL
+        value: "true"
